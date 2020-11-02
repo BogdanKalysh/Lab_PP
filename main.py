@@ -6,10 +6,10 @@ def create_page():
 
     @app.route('/')
     def index():
-        return "<h2>Main<h2>"
+        return "Main page"
 
     @app.route('/api/v1/hello-world-12')
     def api_v1():
-        return make_response("<h2>Hello World 12<h2>", 200)
+        return make_response("Hello World 12", 200)
 
     return app
