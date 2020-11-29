@@ -10,7 +10,7 @@ Applied Programming
 7. pipenv shell
 8. gunicorn -w 4 "main:create_page()"
 
-<p2>To stop local server type: <p2> pkill -f gunicorn
+<p3>To stop local server type: <p3> pkill -f gunicorn
 
 Thanks!
 
