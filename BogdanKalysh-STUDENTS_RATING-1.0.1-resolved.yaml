@@ -1,0 +1,267 @@
+---
+openapi: 3.0.0
+info:
+  title: Students Rating API
+  description: An API that allows to see information about students marks, put new marks or post information about new students
+  contact:
+    name: Bogdan Kalysh
+    email: bogdankalysh20@gmail.com
+  version: 1.0.1
+servers:
+- url: https://somesite.com
+  description: The server
+tags:
+- name: student
+- name: teacher
+  description: operations with students
+paths:
+  /teacher/login:
+    get:
+      tags:
+      - teacher
+      description: autentification of a teacher
+      parameters:
+      - name: email
+        in: query
+        description: The user name for login
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+        "400":
+          description: Invalid username/password supplied
+  /teacher/logout:
+    get:
+      tags:
+      - teacher
+      description: logs out teacher
+      responses:
+        default:
+          description: successful operation
+      security:
+      - student_rating_auth:
+        - write:students
+        - read:students
+  /teacher/signup:
+    post:
+      tags:
+      - teacher
+      description: creates a teacher
+      operationId: createTeacher
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Teacher'
+      responses:
+        "200":
+          description: Signed up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+        "400":
+          description: You didn't fill all fields
+  /students:
+    get:
+      tags:
+      - student
+      description: Obtain information about all students
+      responses:
+        "200":
+          description: Sucessfully pulled students info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        "400":
+          description: An Error occured
+    post:
+      tags:
+      - student
+      description: Add a new student to the db
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      responses:
+        "200":
+          description: Successfully added a new student to the db
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        "400":
+          description: Wrong student obj
+      security:
+      - student_rating_auth:
+        - write:students
+        - read:students
+  /students/top/{quant}:
+    get:
+      tags:
+      - student
+      description: Obtain information about top students
+      parameters:
+      - name: quant
+        in: path
+        description: Quantity of top students to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 10
+      responses:
+        "200":
+          description: Sucessfully returned info about top students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        "400":
+          description: An ERROR occured
+  /students/{id}:
+    get:
+      tags:
+      - student
+      description: Obtain info about specific student
+      parameters:
+      - name: id
+        in: path
+        description: The id of specific student
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 5
+      responses:
+        "200":
+          description: Sucessfully obtained information about the student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        "400":
+          description: Wrong ID
+    put:
+      tags:
+      - student
+      description: Update a student
+      parameters:
+      - name: id
+        in: path
+        description: The id of specific student
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 5
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      responses:
+        "200":
+          description: Sucessfully updated information about the student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        "400":
+          description: Wrong ID
+      security:
+      - student_rating_auth:
+        - write:students
+        - read:students
+    delete:
+      tags:
+      - student
+      description: delete a student
+      parameters:
+      - name: id
+        in: path
+        description: The id of specific student
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 5
+      responses:
+        "200":
+          description: Sucessfully deleted a student
+        "400":
+          description: Wrong ID
+      security:
+      - student_rating_auth:
+        - write:students
+        - read:students
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        student name:
+          type: string
+          example: Bogdan Kalysh
+        student marks:
+          type: array
+          items:
+            type: integer
+      description: Model containing student info
+    Teacher:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        name:
+          type: string
+          example: Bob Johnson
+        email:
+          type: string
+          example: mailmail@gmail.com
+        password:
+          type: string
+          example: qwert1234
+      description: Model containing teacher info
+  securitySchemes:
+    student_rating_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://student.rating.io/oauth/dialog
+          scopes:
+            write:students: modify students info
+            read:students: read info about students
+            
