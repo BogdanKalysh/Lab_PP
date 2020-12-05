@@ -8,10 +8,9 @@ Applied Programming
 5. pyenv install 3.6.8
 6. pyenv local 3.6.8      (in project directory)
 7. pipenv shell
+
 8. gunicorn -w 4 "main:create_page()"
 
 To stop local server press: ctrl+c
 
 Thanks!
-
-
