@@ -16,4 +16,4 @@ session0.close()
 # python add_models.py 
 # чекнути пгадмін
 # alembic revision --autogenerate
-# alembic upgrate head
+# alembic upgrade head
