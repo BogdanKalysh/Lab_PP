@@ -3,7 +3,7 @@ from models import Session, teacher, student
 session0 = Session()
 
 teacher0 = teacher(teacher_id = 1, name = "Ya", email = "miy@gmail.com", password = "takiy")
-student0 = student(student_id = 1, name = "Tlumok", marks = [5])
+student0 = student(student_id = 1, name = "Tlumok",s_bal = 10, marks = [9,11)
 
 session0.add(teacher0)
 session0.add(student0)
