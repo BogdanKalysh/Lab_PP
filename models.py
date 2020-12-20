@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 from werkzeug.security import generate_password_hash
 
-engine = create_engine("postgresql://postgres:147896325@localhost/reiting", echo = True)
+engine = create_engine("postgresql://postgres:postgresqlpass@localhost/online_lec", echo = True)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 

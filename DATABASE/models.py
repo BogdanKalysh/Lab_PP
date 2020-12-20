@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 from werkzeug.security import generate_password_hash
 
-engine = create_engine("postgresql://postgres:147896325@localhost/reiting", echo = True)
+engine = create_engine("postgresql://postgres:postgresqlpass@localhost/online_lec", echo = True)
 
 Session = sessionmaker(bind=engine)
 
@@ -23,5 +23,5 @@ class teacher(Base):
 
     teacher_id = Column('teacher_id',Integer,primary_key=True)
     name = Column('name',String)
-    email = Column('email',String)
+    email = Column('email',String, unique = True)
     password = Column('password',String)
