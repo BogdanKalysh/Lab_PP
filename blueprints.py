@@ -1,12 +1,15 @@
 from flask import Blueprint, jsonify, request
 from schemas import *
 from models import *
+from flask_jwt_extended import create_access_token, jwt_required
+from werkzeug.security import check_password_hash
 
 
 blueprint = Blueprint("Reiting",__name__)
 
 
 @blueprint.route("/students", methods = ["POST"])
+@jwt_required
 def add_student():
     try:
         student_data = New_Student().load(request.json)
@@ -56,6 +59,7 @@ def get_top_students(s_bal):
  
 
 @blueprint.route("/students/<student_id>", methods = ["PUT"])
+@jwt_required
 def put_student(student_id):
     try:
         session = Session()
@@ -73,20 +77,21 @@ def put_student(student_id):
 
 
 @blueprint.route("/students/<student_id>", methods = ["DELETE"])
+@jwt_required
 def del_student(student_id):
     try:
         session = Session()
 
+        if session.query(student).filter_by(student_id = student_id).one() == None:
+            return(jsonify({"code": 400 ,"error": "Wrong id"}))
+
         session.query(student).filter_by(student_id = student_id).delete()
         session.commit()
+
     
     except Exception:
         return(jsonify({"code": 400 ,"error": "Wrong student id"}))
     return jsonify({"Student deleted ": 200})
-
-
-
-
 
 
 @blueprint.route("/teacher/signup",methods = ["POST"])
@@ -102,15 +107,28 @@ def add_teacher():
     
     return jsonify(Teacher_Info().dump(teach_obj)),200
 
+
 @blueprint.route("/teacher/login", methods = ["GET"])
 def login_teacher():
-    teacher_data = Teacher_Log_Info().load(request.json)
-    return("Successful login"), 200
+    try:
+        teacher_data = Teacher_Log_Info().load(request.json)
+
+        session = Session()
+        current_teacher = session.query(teacher).filter_by(email = teacher_data["email"]).one()
+
+
+        if check_password_hash(current_teacher.password, teacher_data["password"]):
+            return jsonify(access_token=create_access_token(identity = teacher_data["email"])), 200
+
+    except Exception:
+        return(jsonify({"code": 400 ,"error": "Wrong login info"}))
 
 
 @blueprint.route("/teacher/logout", methods = ["GET"])
+@jwt_required
 def logout_teacher():
     return("Successful logout"), 200
+
 
 @blueprint.route("/teacher/<teacher_id>", methods = ["PUT"])
 def put_teacher(teacher_id):
@@ -130,11 +148,14 @@ def put_teacher(teacher_id):
 
 
 @blueprint.route("/teacher/<teacher_id>", methods = ["DELETE"])
+@jwt_required
 def del_teacher(teacher_id):
     try:
         session = Session()
-        if session.query(teacher).filter_by(teacher_id = teacher_id) == Null:
+
+        if session.query(teacher).filter_by(teacher_id = teacher_id).one() == None:
             return(jsonify({"code": 400 ,"error": "Wrong teacher id"}))
+
         session.query(teacher).filter_by(teacher_id = teacher_id).delete()
         session.commit()
     except Exception:
