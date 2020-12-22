@@ -25,3 +25,4 @@ class teacher(Base):
     name = Column('name',String)
     email = Column('email',String, unique = True)
     password = Column('password',String)
+        

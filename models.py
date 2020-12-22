@@ -21,7 +21,7 @@ class teacher(Base):
 
     teacher_id = Column('teacher_id',Integer,primary_key=True)
     name = Column('name',String)
-    email = Column('email',String)
+    email = Column('email',String, unique = True)
     password = Column('password',String)
 
 

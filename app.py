@@ -2,11 +2,11 @@ from flask import Flask
 from blueprints import blueprint
 from flask_jwt_extended import JWTManager
 
-def db_error():
-    return jsonify({
-        "code":500,
-        "type":"DATABASE_ERROR"
-        })
+# def db_error():
+#     return jsonify({
+#         "code":500,
+#         "type":"DATABASE_ERROR"
+#         })
 
 app = Flask(__name__)
 
