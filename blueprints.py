@@ -19,7 +19,7 @@ def add_teacher():
         session.add(teach_obj)
         session.commit()
     except Exception:
-        return jsonify({"code":400,"error": "wrong data"})
+        return jsonify({"code":404,"error": "wrong data"}),404
     
     return jsonify(Teacher_Info().dump(teach_obj)),200
 
@@ -41,15 +41,14 @@ def login_teacher():
             return jsonify(access_token=create_access_token(identity = teacher_data["email"])), 200
 
     except Exception:
-        return (jsonify({"code": 400 ,"error": "Wrong login info"}))
-    return (jsonify({"code": 400 ,"error": "Wrong login info"}))
+        return (jsonify({"code": 400 ,"error": "Wrong login info"})),400
 
 
 @blueprint.route("/teacher/logout", methods = ["GET"])
 @jwt_required
 def logout_teacher():
     print(my_id)
-    return("Successful logout"), 200
+    return ("Successful logout"), 200
 
 
 @blueprint.route("/teacher/<int:teacher_id>", methods = ["PUT"])
@@ -65,11 +64,6 @@ def put_teacher(teacher_id):
 
         teacher_data["password"] = generate_password_hash(teacher_data["password"])
 
-        if original_teacher_data == None:
-            return(jsonify({"code": 400 ,"error": "Wrong teacher id"}))
-
-        if(my_id != teacher_id):
-            return("No access to user")
 
         for key , value in teacher_data.items():
             setattr(original_teacher_data,key,value)
@@ -77,31 +71,24 @@ def put_teacher(teacher_id):
         session.commit()
 
     except Exception:
-        return(jsonify({"code":400,"error": "wrong teacher data"}))
+        return(jsonify({"code":401,"error": "wrong teacher data"})),401
 
     return jsonify(New_Teacher().dump(original_teacher_data)),200
 
 
-@blueprint.route("/teacher/<int:teacher_id>", methods = ["DELETE"])
+@blueprint.route("/teacher/<teacher_id>", methods = ["DELETE"])
 @jwt_required
 def del_teacher(teacher_id):
     try:
         session = Session()
 
-        print(my_id)
-
-        if session.query(teacher).filter_by(teacher_id = teacher_id).one() == None:
-            return(jsonify({"code": 400 ,"error": "Wrong teacher id"}))
-
-        if(my_id != teacher_id):
-            return("No access to user")
 
         session.query(teacher).filter_by(teacher_id = teacher_id).delete()
         session.commit()
     except Exception:
-        return(jsonify({"code": 400 ,"error": "Wrong teacher id"}))
+        return(jsonify({"code": 404 ,"error": "Wrong teacher id"})),404
 
-    return jsonify({"Teacher deleted ": 200})
+    return jsonify({"Teacher deleted ": 200}),200
 
 
 
@@ -116,19 +103,15 @@ def add_student():
         session.add(stud_obj)
         session.commit()
     except Exception:
-        return(jsonify({"code":400,"error": "wrong data"}))
+        return(jsonify({"code":401,"error": "wrong data"})),401
     
     return jsonify(Student_Info().dump(stud_obj)),200
 
 
 @blueprint.route("/students", methods = ["GET"])
 def get_students():
-    try:
-        session = Session()
-        students_all = session.query(student).all()
-    except Exception:
-        return jsonify({"code":400,"error": "wrong student data"})
-
+    session = Session()
+    students_all = session.query(student).all()
     return jsonify(Student_Info(many = True).dump(students_all)),200
 
 
@@ -139,7 +122,7 @@ def get_student(student_id):
 
         student_obj = session.query(student).filter_by(student_id = student_id).one()
     except Exception:
-        return jsonify({"code":400,"error": "wrong student id"})
+        return jsonify({"code":400,"error": "wrong student id"}),400
 
     return jsonify(Student_Info().dump(student_obj)),200
 
@@ -151,7 +134,7 @@ def get_top_students(s_bal):
         students_obj = session.query(student).filter(student.s_bal >= int(s_bal)).all()
 
     except Exception:
-        return(jsonify({"code":400,"error": "wrong student id"}))
+        return(jsonify({"code":404,"error": "wrong student id"})),404
 
     return jsonify(Student_Info(many = True).dump(students_obj)),200
  
@@ -169,7 +152,7 @@ def put_student(student_id):
             setattr(original_student_data,key,value)
         session.commit()
     except Exception:
-        return(jsonify({"code":400,"error": "wrong student data"}))
+        return(jsonify({"code":401,"error": "wrong student data"})),401
 
     return jsonify(Student_Info().dump(original_student_data)),200
 
@@ -180,13 +163,11 @@ def del_student(student_id):
     try:
         session = Session()
 
-        if session.query(student).filter_by(student_id = student_id).one() == None:
-            return(jsonify({"code": 400 ,"error": "Wrong id"}))
 
         session.query(student).filter_by(student_id = student_id).delete()
         session.commit()
 
     
     except Exception:
-        return(jsonify({"code": 400 ,"error": "Wrong student id"}))
+        return(jsonify({"code": 401 ,"error": "Wrong student id"})),401
     return jsonify({"Student deleted ": 200})
