@@ -1,2 +1,5 @@
-flask 1.1.2
-gunicorn 20.0.4
+flask
+gunicorn
+marshmallow
+sqlalchemy
+flask_jwt_extendedclr

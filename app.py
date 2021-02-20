@@ -2,11 +2,6 @@ from flask import Flask
 from blueprints import blueprint
 from flask_jwt_extended import JWTManager
 
-# def db_error():
-#     return jsonify({
-#         "code":500,
-#         "type":"DATABASE_ERROR"
-#         })
 
 app = Flask(__name__)
 
@@ -16,7 +11,6 @@ jwt = JWTManager(app)
 
 app.register_blueprint(blueprint,url_prefix="/rating")
 
-# app.register_error_handler(Exception, db_error)
 
 if __name__ == '__main__':
     app.run(debug = True)
