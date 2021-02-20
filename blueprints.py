@@ -1,12 +1,11 @@
 from flask import Blueprint, jsonify, request
 from schemas import *
 from models import *
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_claims
+from flask_jwt_extended import create_access_token, jwt_required#, get_jwt_claims
 from werkzeug.security import check_password_hash, generate_password_hash
 import jwt
 
 blueprint = Blueprint("Rating",__name__)
-
 
 my_id = 0
 
